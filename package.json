@@ -5,19 +5,16 @@
   "main": "data.server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node start"
+    "start": "node data.server.js"
   },
   "author": "Aaron Brown",
   "license": "ISC",
   "dependencies": {
-    "bluebird": "^3.4.1",
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "fakeredis": "^1.0.3",
-    "ioredis": "^2.2.0",
     "q": "^1.4.1",
     "redis": "^2.6.2",
-    "url": "^0.11.0"
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "assert": "^1.4.1",

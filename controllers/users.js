@@ -1,8 +1,9 @@
 var express = require('express');
-var router = express.Router();
-var utils = require('../redis/utils');
 var client = require('../redis/redis')
 var q = require('q');
+var utils = require('../redis/utils');
+
+var router = express.Router();
 
 router.route('/add')
   .post(function(req, res) {
@@ -12,7 +13,7 @@ router.route('/add')
     var zombie = req.body.zombie;
     utils.addUser(user, id, mass, zombie, client)
     .then(function(data) {
-      res.send(data);
+      res.json(data);
     })
     .catch(function(err) {
       console.error(err);
