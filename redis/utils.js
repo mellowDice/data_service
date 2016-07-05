@@ -119,8 +119,8 @@ function getAllObjects(type, client) {
   });
 }
 
-function getObjectById(id, client) {
-  return q.Promise(function(type, resolve, reject) {
+function getObjectById(type, id, client) {
+  return q.Promise(function(resolve, reject) {
     client.multi()
     .hgetall(type + ':' + id)
     .exec(function(err, data) {
