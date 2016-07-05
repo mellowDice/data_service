@@ -8,8 +8,7 @@ var router = express.Router();
 router.route('/add')
   .post(function(req, res) {
     var response = req.body.food;
-    // console.log('typeof req', response);
-    utils.setFood(response, client)
+    utils.setObject('food', response, client)
     .then(function(data) {
       res.send(data);
     })
@@ -20,7 +19,7 @@ router.route('/add')
 
 router.route('/get_all', client)
   .get(function(req, res) {
-    utils.getAllFood(client)
+    utils.getAllObjects('food', client)
     .then(function(data) {
       res.json(data);
     })
@@ -31,7 +30,7 @@ router.route('/get_all', client)
 
 router.route('/:food_id', client)
   .get(function(req, res) {
-    utils.getFoodById(req.params.food_id, client)
+    utils.getObjectById('food', req.params.food_id, client)
     .then(function(data) {
       res.json(data);
     })

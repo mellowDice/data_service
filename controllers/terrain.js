@@ -1,7 +1,6 @@
-var q = require('q');
-
-var client = require('../redis/redis')
 var express = require('express');
+var client = require('../redis/redis')
+var q = require('q');
 var utils = require('../redis/utils');
 
 var router = express.Router();

@@ -7,9 +7,8 @@ var router = express.Router();
 
 router.route('/add')
   .post(function(req, res) {
-    var response = req.body.obstacle;
-    // console.log('typeof req', response);
-    utils.setObstacle(response, client)
+    var response = req.body.obstacles;
+    utils.setObject('obstacles', response, client)
     .then(function(data) {
       res.send(data);
     })
@@ -20,7 +19,7 @@ router.route('/add')
 
 router.route('/get_all', client)
   .get(function(req, res) {
-    utils.getAllObstacles(client)
+    utils.getAllObjects('obstacles', client)
     .then(function(data) {
       res.json(data);
     })
@@ -31,7 +30,7 @@ router.route('/get_all', client)
 
 router.route('/:obstacle_id', client)
   .get(function(req, res) {
-    utils.getObstacleById(req.params.obstacle_id, client)
+    utils.getObjectById('obstacles', req.params.obstacle_id, client)
     .then(function(data) {
       res.json(data);
     })
