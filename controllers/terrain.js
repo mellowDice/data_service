@@ -7,37 +7,26 @@ var router = express.Router();
 
 router.route('/add')
   .post(function(req, res) {
-    var response = req.body.obstacles;
-    utils.setObject('obstacles', response, client)
+    console.log(req.body)
+    var response = req.body;
+    utils.setTerrain(response, client)
+    .then(function(data) {
+      res.json(data);
+    })
+    .catch(function(err) {
+      console.error(err);
+  });
+});
+
+router.route('/get')
+  .get(function(req, res) {
+    utils.getTerrain(client)
     .then(function(data) {
       res.send(data);
     })
     .catch(function(err) {
       console.error(err);
-    });
-});
-
-router.route('/get_all', client)
-  .get(function(req, res) {
-    utils.getAllObjects('obstacles', client)
-    .then(function(data) {
-      res.json(data);
-    })
-    .catch(function(err) {
-      console.error(err);
   });
-});
-
-router.route('/:obstacle_id', client)
-  .get(function(req, res) {
-    utils.getObjectById('obstacles', req.params.obstacle_id, client)
-    .then(function(data) {
-      res.json(data);
-    })
-    .catch(function(err) {
-      console.error(err);
-  });
-});
-
+})
 
 module.exports = router;
