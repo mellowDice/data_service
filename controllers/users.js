@@ -7,11 +7,11 @@ var router = express.Router();
 
 router.route('/add')
   .post(function(req, res) {
-    var user = req.body.user;
+    console.log('reqbody', req);
     var id = req.body.id;
     var mass = req.body.mass;
     var zombie = req.body.zombie;
-    utils.addUser(user, id, mass, zombie, client)
+    utils.addUser(id, mass, zombie, client)
     .then(function(data) {
       res.json(data);
     })

@@ -12,10 +12,10 @@ module.exports.getObjectById = getObjectById;
 
 // ********** USER HANDLING ********** \\
 
-function addUser(user, id, mass, zombie, client){
+function addUser(id, mass, zombie, client){
   return q.Promise(function(resolve, reject){
     client.multi()
-    .hmset(user + ':' + id, 'mass', mass, 'zombie', zombie)
+    .hmset('user:' + id, 'id', id, 'mass', mass, 'zombie', zombie)
     .exec(function(err, data){
       if(err === null){
           resolve(data);
@@ -25,6 +25,8 @@ function addUser(user, id, mass, zombie, client){
     });
   });
 }
+
+// get all users - add id into addUser fn
 
 function getUser(id, client) {
   return q.Promise(function(resolve, reject) {
@@ -115,7 +117,7 @@ function getAllObjects(type, client) {
           }
         });
       }
-    })
+    });
   });
 }
 
