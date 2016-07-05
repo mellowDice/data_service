@@ -1,23 +1,33 @@
 var express = require('express');
 var router = express.Router();
+var utils = require('../redis/utils');
+var client = require('../redis/redis')
+var q = require('q');
 
-var Users = require('../models/users');
-
-router.route('/add').post(function(req, res) {
-  var data = req.body;
-  Users.add(function(err, data) {
-    if (err) {
+router.route('/add')
+  .post(function(req, res) {
+    var user = req.body.user;
+    var id = req.body.id;
+    var mass = req.body.mass;
+    var zombie = req.body.zombie;
+    utils.addUser(user, id, mass, zombie, client)
+    .then(function(data) {
+      res.send(data);
+    })
+    .catch(function(err) {
       console.error(err);
-    } else {
-      res.json('user', {user: data});
-    }
-  });
+    });
 });
 
-router.get('/id', function(req, res) {
-  var data = 'user:' + req.user;
-  Users.get(function(err, data) {
-    res.json('user', {user: data})
+router.route('/:user_id', client)
+  .get(function(req, res) {
+    console.log(req.params.user_id);
+    utils.getUser(req.params.user_id, client)
+    .then(function(data) {
+      res.json(data);
+    })
+    .catch(function(err) {
+      console.error(err);
   });
 });
 
