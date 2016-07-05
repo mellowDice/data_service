@@ -1,11 +1,13 @@
 var q = require('q');
 var _ = require('underscore');
 
-// setting up export functions
+// ********** EXPORTING ALL HELPER FUNCTIONS ********** \\
+
 module.exports.setTerrain = setTerrain;
 module.exports.getTerrain = getTerrain;
 module.exports.addUser = addUser;
-module.exports.getUser = getUser;
+module.exports.getAllUsers = getAllUsers;
+module.exports.getUserById = getUserById;
 module.exports.setObject = setObject;
 module.exports.getAllObjects = getAllObjects;
 module.exports.getObjectById = getObjectById;
@@ -16,6 +18,7 @@ function addUser(id, mass, zombie, client){
   return q.Promise(function(resolve, reject){
     client.multi()
     .hmset('user:' + id, 'id', id, 'mass', mass, 'zombie', zombie)
+    .lpush('users', 'user' + ':' + id)
     .exec(function(err, data){
       if(err === null){
           resolve(data);
@@ -26,16 +29,39 @@ function addUser(id, mass, zombie, client){
   });
 }
 
-// get all users - add id into addUser fn
+function getAllUsers(client) {
+  var results = [];
+  return q.Promise(function(resolve, reject) {
+    client.multi()
+    .lrange('users', 0, -1)
+    .exec(function(err, indexes) {
+      console.log(indexes[0].length);
+      for (var i = 0; i < indexes[0].length; i++) {
+        client.multi()
+        .hgetall(indexes[0][i])
+        .exec(function(err, data) {
+          if (err !== null) {
+            reject(err);
+            return;
+          }
+          results.push(data[0]);
+          if(results.length === indexes[0].length) {
+            resolve(results);
+          }
+        });
+      }
+    });
+  });
+}
 
-function getUser(id, client) {
+function getUserById(id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .hgetall('user:' + id)
     .exec(function(err, data) {
       if(err === null){
           resolve(data);
-      }else{
+      } else {
           reject(err);
       }
     })
