@@ -10,7 +10,7 @@ router.route('/add')
     console.log('reqbody', req.body);
     var id = req.body.id;
     var mass = req.body.mass;
-    var zombie = req.body.zombie;
+    var zombie = req.body.zombie || null;
     utils.addUser(id, mass, zombie, client)
     .then(function(data) {
       res.json(data);
