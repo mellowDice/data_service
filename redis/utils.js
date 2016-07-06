@@ -148,6 +148,13 @@ function getTerrain(client) {
     .lrange('terrain', 0, -1)
     .exec(function(err, data) {
       if (err === null) {
+          resolve(data);
+        } else {
+          reject(err);
+        }
+      });
+  }); 
+}
 
 // ********** PLAYER HANDLING ********** \\
 
