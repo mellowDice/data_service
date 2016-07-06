@@ -1,14 +1,16 @@
 FROM node
 
-RUN mkdir app
-ADD . /app
-WORKDIR /app
+ENV NODE_ENV=production
+ENV PORT=3000
+
+
+COPY . /var/www
+WORKDIR /var/www
+
+VOLUME ["var/www"]
 
 RUN npm install
-RUN redis-server /usr/local/etc/redis.conf
 
-EXPOSE 3000
+EXPOSE $PORT
 
 ENTRYPOINT ["npm", "start"]
-
-
