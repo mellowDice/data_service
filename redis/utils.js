@@ -1,16 +1,15 @@
 var q = require('q');
-var _ = require('underscore');
 
 // ********** EXPORTING ALL HELPER FUNCTIONS ********** \\
 
-module.exports.setTerrain = setTerrain;
-module.exports.getTerrain = getTerrain;
 module.exports.addUser = addUser;
 module.exports.deleteUser = deleteUser;
 module.exports.getUserById = getUserById;
 module.exports.setObject = setObject;
 module.exports.getAllObjects = getAllObjects;
 module.exports.getObjectById = getObjectById;
+module.exports.setTerrain = setTerrain;
+module.exports.getTerrain = getTerrain;
 
 // ********** USER HANDLING ********** \\
 
@@ -57,40 +56,6 @@ function getUserById(id, client) {
   });
 }
 
-// ********** TERRAIN HANDLING ********** \\
-
-function setTerrain(data, client) {
-  return q.Promise(function(resolve, reject) {
-    console.log('data', data.length);
-    var length = data.length;
-    for (var i = 0; i < length; i++) {
-      console.log(data[i]);
-      client.multi()
-      .lpush("terrain", data[i])
-      .exec(function(err, data) {
-        if (err === null) {
-          resolve(data);
-        } else {
-          reject(err);
-        }
-      });
-    }
-  })
-}
-
-function getTerrain(client) {
-  return q.Promise(function(resolve, reject) {
-    client.multi()
-    .lrange('terrain', 0, -1)
-    .exec(function(err, data) {
-      if (err === null) {
-        resolve(data);
-      } else {
-        reject(err);
-      }
-    });
-  });
-}
 
 // ********** TERRAIN OBJECTS HANDLING ********** \\
 
@@ -147,6 +112,41 @@ function getAllObjects(type, client) {
             resolve(results);
           }
         });
+      }
+    });
+  });
+}
+
+// ********** TERRAIN HANDLING ********** \\
+
+function setTerrain(data, client) {
+  return q.Promise(function(resolve, reject) {
+    console.log('data', data.length);
+    var length = data.length;
+    for (var i = 0; i < length; i++) {
+      console.log(data[i]);
+      client.multi()
+      .lpush("terrain", data[i])
+      .exec(function(err, data) {
+        if (err === null) {
+          resolve(data);
+        } else {
+          reject(err);
+        }
+      });
+    }
+  })
+}
+
+function getTerrain(client) {
+  return q.Promise(function(resolve, reject) {
+    client.multi()
+    .lrange('terrain', 0, -1)
+    .exec(function(err, data) {
+      if (err === null) {
+        resolve(data);
+      } else {
+        reject(err);
       }
     });
   });
