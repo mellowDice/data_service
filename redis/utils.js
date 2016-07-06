@@ -102,20 +102,23 @@ function getAllObjects(type, client) {
     client.multi()
     .lrange(type, 0, -1)
     .exec(function(err, indexes) {
-      console.log(indexes[0].length);
-      for (var i = 0; i < indexes[0].length; i++) {
-        client.multi()
-        .hgetall(indexes[0][i])
-        .exec(function(err, data) {
-          if (err !== null) {
-            reject(err);
-            return;
-          }
-          results.push(data[0]);
-          if(results.length === indexes[0].length) {
-            resolve(results);
-          }
-        });
+      if (indexes[0].length > 0) {
+        for (var i = 0; i < indexes[0].length; i++) {
+          client.multi()
+          .hgetall(indexes[0][i])
+          .exec(function(err, data) {
+            if (err !== null) {
+              reject(err);
+              return;
+            }
+            results.push(data[0]);
+            if(results.length === indexes[0].length) {
+              resolve(results);
+            }
+          });
+        }
+      } else {
+        resolve({'message': null}); 
       }
     });
   });
