@@ -5,3 +5,16 @@ services:
     build: .
     ports:
       - "3000:3000"
+    networks:
+      - data-net
+
+  redis:
+    image: redis
+    networks:
+      - data-net
+
+networks:
+  data-net:
+    driver: bridge
+
+
