@@ -6,7 +6,7 @@ var _ = require('underscore');
 module.exports.setTerrain = setTerrain;
 module.exports.getTerrain = getTerrain;
 module.exports.addUser = addUser;
-module.exports.getAllUsers = getAllUsers;
+module.exports.deleteUser = deleteUser;
 module.exports.getUserById = getUserById;
 module.exports.setObject = setObject;
 module.exports.getAllObjects = getAllObjects;
@@ -20,35 +20,24 @@ function addUser(id, mass, zombie, client){
     .hmset('user:' + id, 'id', id, 'mass', mass, 'zombie', zombie)
     .lpush('users', 'user' + ':' + id)
     .exec(function(err, data){
-      if(err === null){
-          resolve(data);
+      if(err === null) {
+        resolve(data);
       } else{
-          reject(err);
+        reject(err);
       }
     });
   });
 }
 
-function getAllUsers(client) {
-  var results = [];
+function deleteUser(id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
-    .lrange('users', 0, -1)
-    .exec(function(err, indexes) {
-      console.log(indexes[0].length);
-      for (var i = 0; i < indexes[0].length; i++) {
-        client.multi()
-        .hgetall(indexes[0][i])
-        .exec(function(err, data) {
-          if (err !== null) {
-            reject(err);
-            return;
-          }
-          results.push(data[0]);
-          if(results.length === indexes[0].length) {
-            resolve(results);
-          }
-        });
+    .del('user:' + id)
+    .exec(function(err, data) {
+      if(err === null) {
+        resolve(data);
+      } else {
+        reject(err);
       }
     });
   });
@@ -60,9 +49,9 @@ function getUserById(id, client) {
     .hgetall('user:' + id)
     .exec(function(err, data) {
       if(err === null){
-          resolve(data);
+        resolve(data);
       } else {
-          reject(err);
+        reject(err);
       }
     })
   });
@@ -122,6 +111,22 @@ function setObject(type, data, client) {
   });
 }
 
+function getObjectById(type, id, client) {
+  return q.Promise(function(resolve, reject) {
+    client.multi()
+    .hgetall(type + ':' + id)
+    .exec(function(err, data) {
+      if(err === null){
+        resolve(data);
+      } else{
+        reject(err);
+      }
+    })
+  });
+}
+
+// ********** GET ALL OBJECTS AND USERS ********** \\
+
 function getAllObjects(type, client) {
   var results = [];
   return q.Promise(function(resolve, reject) {
@@ -144,19 +149,5 @@ function getAllObjects(type, client) {
         });
       }
     });
-  });
-}
-
-function getObjectById(type, id, client) {
-  return q.Promise(function(resolve, reject) {
-    client.multi()
-    .hgetall(type + ':' + id)
-    .exec(function(err, data) {
-      if(err === null){
-          resolve(data);
-      } else{
-          reject(err);
-      }
-    })
   });
 }
