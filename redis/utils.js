@@ -10,13 +10,17 @@ module.exports.getAllObjects = getAllObjects;
 module.exports.getObjectById = getObjectById;
 module.exports.setTerrain = setTerrain;
 module.exports.getTerrain = getTerrain;
+module.exports.addPlayer = addPlayer;
+module.exports.deletePlayer = deletePlayer;
+module.exports.getPlayerById = getPlayerById;
+
 
 // ********** USER HANDLING ********** \\
 
-function addUser(id, mass, zombie, client){
+function addUser(id, zombies, client){
   return q.Promise(function(resolve, reject){
     client.multi()
-    .hmset('user:' + id, 'id', id, 'mass', mass, 'zombie', zombie)
+    .hmset('user:' + id, 'id', id, 'zombies', zombies)
     .lpush('users', 'user' + ':' + id)
     .exec(function(err, data){
       if(err === null) {
@@ -144,10 +148,49 @@ function getTerrain(client) {
     .lrange('terrain', 0, -1)
     .exec(function(err, data) {
       if (err === null) {
+
+// ********** PLAYER HANDLING ********** \\
+
+function addPlayer(id, mass, client){
+  console.log('adding!'); 
+  return q.Promise(function(resolve, reject){
+    client.multi()
+    .hmset('player:' + id, 'id', id, 'mass', mass)
+    .lpush('players', 'player' + ':' + id)
+    .exec(function(err, data) {
+      if (err === null) {
         resolve(data);
       } else {
         reject(err);
       }
     });
+  });
+}
+
+function deletePlayer(id, client) {
+  return q.Promise(function(resolve, reject) {
+    client.multi()
+    .del('player:' + id)
+    .exec(function(err, data) {
+      if(err === null) {
+        resolve(data);
+      } else {
+        reject(err);
+      }
+    });
+  });
+}
+
+function getPlayerById(id, client) {
+  return q.Promise(function(resolve, reject) {
+    client.multi()
+    .hgetall('player:' + id)
+    .exec(function(err, data) {
+      if(err === null){
+        resolve(data);
+      } else {
+        reject(err);
+      }
+    }); 
   });
 }
