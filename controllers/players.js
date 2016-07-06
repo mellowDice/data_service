@@ -8,8 +8,8 @@ var router = express.Router();
 router.route('/add')
 .post(function(req, res) {
   var id = req.body.id;
-  var zombie = req.body.zombie || null;
-  utils.addUser(id, zombie, client)
+  var mass = req.body.mass;
+  utils.addPlayer(id, mass, client)
   .then(function(data) {
     res.json(data);
   })
@@ -20,18 +20,18 @@ router.route('/add')
 
 router.route('/get_all')
 .get(function(req, res) {
-  utils.getAllObjects('users', client)
+  utils.getAllObjects('players', client)
   .then(function(data) {
     res.json(data);
   })
   .catch(function(err) {
     console.error(err);
-  })
-})
+  }); 
+}); 
 
-router.route('/:user_id', client)
+router.route('/:player_id', client)
 .get(function(req, res) {
-  utils.getUserById(req.params.user_id, client)
+  utils.getPlayerById(req.params.player_id, client)
   .then(function(data) {
     res.json(data);
   })
@@ -40,9 +40,9 @@ router.route('/:user_id', client)
   });
 });
 
-router.route('/delete/:user_id', client)
+router.route('/delete/:player_id', client)
 .get(function(req, res) {
-  utils.deleteUser(req.params.user_id, client)
+  utils.deletePlayer(req.params.player_id, client)
   .then(function(data) {
     res.json(data);
   })

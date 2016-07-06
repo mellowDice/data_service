@@ -16,6 +16,7 @@ app.use('/users', require('./controllers/users'));
 app.use('/food', require('./controllers/food'));
 app.use('/obstacles', require('./controllers/obstacles'));
 app.use('/terrain', require('./controllers/terrain'));
+app.use('/players', require('./controllers/players'));
 app.use('/flush', require('./controllers/redis'));
 
 
