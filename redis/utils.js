@@ -15,20 +15,27 @@ module.exports.deletePlayer = deletePlayer;
 module.exports.getPlayerById = getPlayerById;
 
 
+// ********* ERROR HANDLING ********** \\
+
+function handleError(resolve, reject) {
+  return function(err, data) {
+    if(err === null) {
+      resolve(data);
+    } else{
+      reject(err);
+    }
+  }
+}
+
 // ********** USER HANDLING ********** \\
 
 function addUser(id, zombies, client){
   return q.Promise(function(resolve, reject){
     client.multi()
     .hmset('user:' + id, 'id', id, 'zombies', zombies)
+    .lrem('users', -1, 'user' + ':' + id)
     .lpush('users', 'user' + ':' + id)
-    .exec(function(err, data){
-      if(err === null) {
-        resolve(data);
-      } else{
-        reject(err);
-      }
-    });
+    .exec(handleError(resolve, reject));
   });
 }
 
@@ -36,13 +43,7 @@ function deleteUser(id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .del('user:' + id)
-    .exec(function(err, data) {
-      if(err === null) {
-        resolve(data);
-      } else {
-        reject(err);
-      }
-    });
+    .exec(handleError(resolve, reject));
   });
 }
 
@@ -50,17 +51,19 @@ function getUserById(id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .hgetall('user:' + id)
-    .exec(function(err, data) {
-      if(err === null){
-        resolve(data);
-      } else {
-        reject(err);
-      }
-    })
+    .exec(handleError(resolve, reject))
   });
 }
 
-
+function addZombie(id, zombie, client) {
+  return q.Promise(function(resolve, reject){
+    client.multi()
+    .hmset('user:' + id, 'id', id, 'zombies', zombies)
+    .lpush()
+    .lpush('users', 'user' + ':' + id)
+    .exec(handleError(resolve, reject));
+  });
+}
 // ********** TERRAIN OBJECTS HANDLING ********** \\
 
 function setObject(type, data, client) {
@@ -69,13 +72,7 @@ function setObject(type, data, client) {
       client.multi()
       .hmset(type + ':' + data[key].id, 'id', data[key].id, 'x', data[key].x, 'y', data[key].y, 'z', data[key].z)
       .lpush(type, type + ':' + data[key].id)
-      .exec(function(err, data) {
-        if (err === null) {
-          resolve(data);
-        } else {
-          reject(err);
-        }
-      });
+      .exec(handleError(resolve, reject));
     }
   });
 }
@@ -84,13 +81,7 @@ function getObjectById(type, id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .hgetall(type + ':' + id)
-    .exec(function(err, data) {
-      if(err === null){
-        resolve(data);
-      } else{
-        reject(err);
-      }
-    })
+    .exec(handleError(resolve, reject))
   });
 }
 
@@ -113,12 +104,14 @@ function getAllObjects(type, client) {
             }
             results.push(data[0]);
             if(results.length === indexes[0].length) {
-              resolve(results);
+              resolve(results.filter(function(val) {
+                return val !== null; 
+              }));
             }
           });
         }
       } else {
-        resolve({'message': null}); 
+        resolve([]); 
       }
     });
   });
@@ -134,13 +127,7 @@ function setTerrain(data, client) {
       console.log(data[i]);
       client.multi()
       .lpush("terrain", data[i])
-      .exec(function(err, data) {
-        if (err === null) {
-          resolve(data);
-        } else {
-          reject(err);
-        }
-      });
+      .exec(handleError(resolve, reject));
     }
   })
 }
@@ -149,13 +136,7 @@ function getTerrain(client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .lrange('terrain', 0, -1)
-    .exec(function(err, data) {
-      if (err === null) {
-          resolve(data);
-        } else {
-          reject(err);
-        }
-      });
+    .exec(handleError(resolve, reject));
   }); 
 }
 
@@ -167,13 +148,7 @@ function addPlayer(id, mass, client){
     client.multi()
     .hmset('player:' + id, 'id', id, 'mass', mass)
     .lpush('players', 'player' + ':' + id)
-    .exec(function(err, data) {
-      if (err === null) {
-        resolve(data);
-      } else {
-        reject(err);
-      }
-    });
+    .exec(handleError(resolve, reject));
   });
 }
 
@@ -181,13 +156,7 @@ function deletePlayer(id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .del('player:' + id)
-    .exec(function(err, data) {
-      if(err === null) {
-        resolve(data);
-      } else {
-        reject(err);
-      }
-    });
+    .exec(handleError(resolve, reject));
   });
 }
 
@@ -195,12 +164,6 @@ function getPlayerById(id, client) {
   return q.Promise(function(resolve, reject) {
     client.multi()
     .hgetall('player:' + id)
-    .exec(function(err, data) {
-      if(err === null){
-        resolve(data);
-      } else {
-        reject(err);
-      }
-    }); 
+    .exec(handleError(resolve, reject)); 
   });
 }
