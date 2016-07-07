@@ -70,7 +70,7 @@ function setObject(type, data, client) {
   return q.Promise(function(resolve, reject) {
     for (var key in data) {
       client.multi()
-      .hmset(type + ':' + data[key].id, 'id', data[key].id, 'x', data[key].x, 'y', data[key].y, 'z', data[key].z)
+      .hmset(type + ':' + data[key].id, 'id', data[key].id, 'x', data[key].x, 'z', data[key].z)
       .lpush(type, type + ':' + data[key].id)
       .exec(handleError(resolve, reject));
     }
